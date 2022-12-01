@@ -34,6 +34,10 @@ from ctapipe.image.hillas import camera_to_shower_coordinates
 from ctapipe.instrument import SubarrayDescription
 from ctapipe_io_lst import OPTICS
 
+
+import logging
+log = logging.getLogger(__name__)
+
 __all__ = [
     'apply_models',
     'build_models',
@@ -380,7 +384,7 @@ def build_models(filegammas, fileprotons,
         lhfit_df_proton = pd.read_hdf(fileprotons, key=dl1_likelihood_params_lstcam_key)
         df_proton = pd.concat([df_proton, lhfit_df_proton], axis=1)
 
-    print("will filter gamma")
+    log.warning("will filter gamma")
     t = time.time()
     df_gamma = utils.filter_events(df_gamma,
                                    filters=events_filters,
