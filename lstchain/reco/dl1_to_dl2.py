@@ -402,10 +402,18 @@ def build_models(filegammas, fileprotons,
 
     # Training MC gammas in reduced viewcone
     src_r_m = np.sqrt(df_gamma['src_x'] ** 2 + df_gamma['src_y'] ** 2)
+
+    print("computed src_r_m", len(src_r_m))
     foclen = OPTICS.equivalent_focal_length.value
+    
     src_r_deg = np.rad2deg(np.arctan(src_r_m / foclen))
+
+    print("computed src_r_deg", len(src_r_m))
+
     df_gamma = df_gamma[(src_r_deg >= config['train_gamma_src_r_deg'][0]) & (
             src_r_deg <= config['train_gamma_src_r_deg'][1])]
+
+    print("filtered df_gamma", len(df_gamma))
 
     # Train regressors for energy and disp_norm reconstruction, only with gammas
     n_gamma_regressors = config["n_training_events"]["gamma_regressors"]
