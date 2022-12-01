@@ -380,7 +380,8 @@ def build_models(filegammas, fileprotons,
         lhfit_df_proton = pd.read_hdf(fileprotons, key=dl1_likelihood_params_lstcam_key)
         df_proton = pd.concat([df_proton, lhfit_df_proton], axis=1)
 
-    print("will filter gamma", (t:=time.time()))
+    print("will filter gamma")
+    t = time.time()
     df_gamma = utils.filter_events(df_gamma,
                                    filters=events_filters,
                                    finite_params=config['energy_regression_features']
@@ -389,7 +390,8 @@ def build_models(filegammas, fileprotons,
                                                  + config['disp_classification_features'],
                                    )
 
-    print("done! filter gamma", time.time() - (t:=time.time()))
+    print("done! filter gamma", time.time() - t)
+    t = time.time()
 
     print("will filter proton")
     df_proton = utils.filter_events(df_proton,
@@ -399,22 +401,27 @@ def build_models(filegammas, fileprotons,
                                                   + config['particle_classification_features']
                                                   + config['disp_classification_features'],
                                     )
-    print("done! filter proton", time.time() - (t:=time.time()))
+    print("done! filter proton", time.time() - t)
+    t = time.time()
 
     # Training MC gammas in reduced viewcone
     src_r_m = np.sqrt(df_gamma['src_x'] ** 2 + df_gamma['src_y'] ** 2)
 
-    print("computed src_r_m", len(src_r_m), time.time() - (t:=time.time()))
+    print("computed src_r_m", len(src_r_m), time.time() - t)
+    t = time.time()
+
     foclen = OPTICS.equivalent_focal_length.value
     
     src_r_deg = np.rad2deg(np.arctan(src_r_m / foclen))
 
-    print("computed src_r_deg", len(src_r_m), time.time() - (t:=time.time()))
+    print("computed src_r_deg", len(src_r_m), time.time() - t)
+    t = time.time()
 
     df_gamma = df_gamma[(src_r_deg >= config['train_gamma_src_r_deg'][0]) & (
             src_r_deg <= config['train_gamma_src_r_deg'][1])]
 
-    print("filtered df_gamma", len(df_gamma), time.time() - (t:=time.time()))
+    print("filtered df_gamma", len(df_gamma), time.time() - t)
+    t = time.time()
 
     # Train regressors for energy and disp_norm reconstruction, only with gammas
     n_gamma_regressors = config["n_training_events"]["gamma_regressors"]
