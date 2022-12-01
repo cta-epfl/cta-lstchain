@@ -343,6 +343,8 @@ def build_models(filegammas, fileprotons,
     df_gamma = pd.read_hdf(filegammas, key=dl1_params_lstcam_key)
     df_proton = pd.read_hdf(fileprotons, key=dl1_params_lstcam_key)
 
+    print("read gamma and proton")
+
     if config['source_dependent']:
         # if source-dependent parameters are already in dl1 data, just read those data
         # if not, source-dependent parameters are added here
@@ -377,6 +379,7 @@ def build_models(filegammas, fileprotons,
         lhfit_df_proton = pd.read_hdf(fileprotons, key=dl1_likelihood_params_lstcam_key)
         df_proton = pd.concat([df_proton, lhfit_df_proton], axis=1)
 
+    print("will filter gamma")
     df_gamma = utils.filter_events(df_gamma,
                                    filters=events_filters,
                                    finite_params=config['energy_regression_features']
@@ -385,6 +388,9 @@ def build_models(filegammas, fileprotons,
                                                  + config['disp_classification_features'],
                                    )
 
+    print("done! filter gamma")                            
+
+    print("will filter proton")
     df_proton = utils.filter_events(df_proton,
                                     filters=events_filters,
                                     finite_params=config['energy_regression_features']
@@ -392,6 +398,7 @@ def build_models(filegammas, fileprotons,
                                                   + config['particle_classification_features']
                                                   + config['disp_classification_features'],
                                     )
+    print("done! filter proton")
 
     # Training MC gammas in reduced viewcone
     src_r_m = np.sqrt(df_gamma['src_x'] ** 2 + df_gamma['src_y'] ** 2)
@@ -411,6 +418,7 @@ def build_models(filegammas, fileprotons,
     else:
         df_gamma_reg = df_gamma
 
+    print("will train_energy")
     reg_energy = train_energy(df_gamma_reg, custom_config=config)
 
     if save_models:
