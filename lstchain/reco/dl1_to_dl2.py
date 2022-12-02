@@ -73,11 +73,12 @@ def train_energy(train, custom_config=None):
     features = config['energy_regression_features']
     model = RandomForestRegressor
 
+    log.warning("starting train energy (print follows)")
     print("Given features: ", features)
     print("Number of events for training: ", train.shape[0])
     print("Training Random Forest Regressor for Energy Reconstruction...")
 
-    reg = model(**energy_regression_args)
+    reg = model(**energy_regression_args, verbose=10)
     reg.fit(train[features],
             train['log_mc_energy'])
 
