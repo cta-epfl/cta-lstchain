@@ -20,6 +20,8 @@ from pathlib import Path
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
+from scitime import RuntimeEstimator
+
 from . import disp
 from . import utils
 from ..io import (
@@ -117,8 +119,15 @@ def train_disp_vector(train, custom_config=None, predict_features=None):
     print("Training model {} for disp vector regression".format(model))
 
     reg = model(**disp_regression_args)
+
     x = train[features]
     y = np.transpose([train[f] for f in predict_features])
+
+    estimator = RuntimeEstimator(meta_algo='RF', verbose=3)
+    estimation, lower_bound, upper_bound = estimator.time(reg, x, y)
+
+    print("estimator predicts estimation, lower_bound, upper_bound:", estimation, lower_bound, upper_bound)
+
     reg.fit(x, y)
 
     print("Model {} trained!".format(model))
